@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @method static \Ziming\LaravelCloudflareBrowserRun\BrowserRunRequest url(string $url)
  * @method static \Ziming\LaravelCloudflareBrowserRun\BrowserRunRequest html(string $html)
+ * @method static \Ziming\LaravelCloudflareBrowserRun\CrawlRequest crawl(string $url)
  */
 class LaravelCloudflareBrowserRun extends Facade
 {

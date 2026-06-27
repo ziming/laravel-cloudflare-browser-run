@@ -2,24 +2,21 @@
 
 namespace Ziming\LaravelCloudflareBrowserRun;
 
+use Ziming\LaravelCloudflareBrowserRun\Concerns\HasRenderOptions;
 use Ziming\LaravelCloudflareBrowserRun\Responses\CloudflareBinaryResponse;
 use Ziming\LaravelCloudflareBrowserRun\Responses\CloudflareJsonResponse;
 
 /**
- * Fluent, per-request builder for a single Cloudflare Browser Rendering call.
+ * Fluent, per-request builder for a single Cloudflare Browser Rendering Quick
+ * Action.
  *
  * Created via LaravelCloudflareBrowserRun::url()/html(); shared render options
- * are set with the fluent methods below and the terminal endpoint methods
+ * come from the HasRenderOptions trait and the terminal endpoint methods
  * execute the request through the client.
  */
 class BrowserRunRequest
 {
-    /**
-     * Shared top-level Cloudflare render/load options.
-     *
-     * @var array<string, mixed>
-     */
-    protected array $options = [];
+    use HasRenderOptions;
 
     protected ?int $cacheTtl = null;
 
@@ -30,116 +27,6 @@ class BrowserRunRequest
         protected LaravelCloudflareBrowserRun $client,
         protected array $source,
     ) {}
-
-    // ------------------------------------------------------------------
-    // Shared option setters
-    // ------------------------------------------------------------------
-
-    public function withOption(string $key, mixed $value): static
-    {
-        $this->options[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param  array<string, mixed>  $options
-     */
-    public function withOptions(array $options): static
-    {
-        foreach ($options as $key => $value) {
-            $this->options[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param  array<string, mixed>  $gotoOptions
-     */
-    public function gotoOptions(array $gotoOptions): static
-    {
-        return $this->withOption('gotoOptions', $gotoOptions);
-    }
-
-    /**
-     * @param  array<string, mixed>  $viewport
-     */
-    public function viewport(array $viewport): static
-    {
-        return $this->withOption('viewport', $viewport);
-    }
-
-    /**
-     * @param  array<string, mixed>  $options  Extra keys (hidden, timeout, visible).
-     */
-    public function waitForSelector(string $selector, array $options = []): static
-    {
-        return $this->withOption('waitForSelector', array_merge(['selector' => $selector], $options));
-    }
-
-    public function waitForTimeout(int $milliseconds): static
-    {
-        return $this->withOption('waitForTimeout', $milliseconds);
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $cookies
-     */
-    public function cookies(array $cookies): static
-    {
-        return $this->withOption('cookies', $cookies);
-    }
-
-    /**
-     * @param  array<int, string>  $types
-     */
-    public function rejectResourceTypes(array $types): static
-    {
-        return $this->withOption('rejectResourceTypes', $types);
-    }
-
-    /**
-     * Maps to Cloudflare's setExtraHTTPHeaders option.
-     *
-     * @param  array<string, string>  $headers
-     */
-    public function headers(array $headers): static
-    {
-        return $this->withOption('setExtraHTTPHeaders', $headers);
-    }
-
-    public function userAgent(string $userAgent): static
-    {
-        return $this->withOption('userAgent', $userAgent);
-    }
-
-    public function authenticate(string $username, string $password): static
-    {
-        return $this->withOption('authenticate', ['username' => $username, 'password' => $password]);
-    }
-
-    /**
-     * @param  array<string, mixed>  $scriptTag  { id?, content?, type?, url? }
-     */
-    public function addScriptTag(array $scriptTag): static
-    {
-        $tags = $this->options['addScriptTag'] ?? [];
-        $tags[] = $scriptTag;
-
-        return $this->withOption('addScriptTag', $tags);
-    }
-
-    /**
-     * @param  array<string, mixed>  $styleTag  { content?, url? }
-     */
-    public function addStyleTag(array $styleTag): static
-    {
-        $tags = $this->options['addStyleTag'] ?? [];
-        $tags[] = $styleTag;
-
-        return $this->withOption('addStyleTag', $tags);
-    }
 
     /**
      * Override the configured cacheTTL for this request (0 disables caching).
@@ -164,7 +51,7 @@ class BrowserRunRequest
     }
 
     /**
-     * @param  array<string, mixed>  $screenshotOptions  fullPage, clip, type, quality, ...
+     * @param  array{fullPage?: bool, clip?: array{x: float, y: float, width: float, height: float}, captureBeyondViewport?: bool, omitBackground?: bool, quality?: int, type?: string}  $screenshotOptions  type: png|jpeg|webp
      * @param  array<string, mixed>  $options
      */
     public function screenshot(array $screenshotOptions = [], array $options = []): CloudflareBinaryResponse
@@ -175,7 +62,7 @@ class BrowserRunRequest
     }
 
     /**
-     * @param  array<string, mixed>  $pdfOptions  format, landscape, margin, printBackground, ...
+     * @param  array{format?: string, width?: string|float, height?: string|float, landscape?: bool, margin?: array{top?: string, right?: string, bottom?: string, left?: string}, displayHeaderFooter?: bool, headerTemplate?: string, footerTemplate?: string, printBackground?: bool, pageRanges?: string, scale?: float, preferCSSPageSize?: bool, omitBackground?: bool, outline?: bool, tagged?: bool, timeout?: int}  $pdfOptions
      * @param  array<string, mixed>  $options
      */
     public function pdf(array $pdfOptions = [], array $options = []): CloudflareBinaryResponse
@@ -186,7 +73,7 @@ class BrowserRunRequest
     }
 
     /**
-     * @param  array<int, string>  $formats  At least two of content/screenshot/markdown/accessibilityTree.
+     * @param  list<string>  $formats  At least two of content/screenshot/markdown/accessibilityTree.
      * @param  array<string, mixed>  $options
      */
     public function snapshot(array $formats = [], array $options = []): CloudflareJsonResponse
@@ -197,7 +84,7 @@ class BrowserRunRequest
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $elements  e.g. [['selector' => 'h1']]
+     * @param  list<array{selector: string}>  $elements  e.g. [['selector' => 'h1']]
      * @param  array<string, mixed>  $options
      */
     public function scrape(array $elements, array $options = []): CloudflareJsonResponse
@@ -206,7 +93,7 @@ class BrowserRunRequest
     }
 
     /**
-     * @param  array<string, mixed>  $responseFormat  JSON-schema response_format.
+     * @param  array{type?: string, schema?: array<string, mixed>}  $responseFormat  JSON-schema response_format.
      * @param  array<string, mixed>  $options
      */
     public function json(?string $prompt = null, array $responseFormat = [], array $options = []): CloudflareJsonResponse

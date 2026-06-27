@@ -102,6 +102,40 @@ $pdf = LaravelCloudflareBrowserRun::html('<h1>Invoice</h1>')
 return response($pdf->body(), 200, ['Content-Type' => $pdf->contentType()]);
 ```
 
+### Crawling (async)
+
+`/crawl` follows links from a starting URL and runs **asynchronously**: you submit a job, get a job ID back, then poll for status and records (Cloudflare retains results for 14 days).
+
+```php
+$job = LaravelCloudflareBrowserRun::crawl('https://example.com')
+    ->limit(100)                         // max pages
+    ->depth(3)                           // max link depth
+    ->formats(['Markdown'])              // HTML | Markdown | JSON
+    ->includePatterns(['/docs/*'])
+    ->excludePatterns(['/admin/*'])
+    ->render(false)                      // fast HTML fetch, no JS
+    ->start();
+
+$jobId = $job->id();
+
+// Later — poll for progress and results:
+$result = $job->result();               // or app(...)->crawlResult($jobId)
+
+if ($result->isCompleted()) {
+    foreach ($result->records() as $record) {
+        // $record['url'], $record['markdown'], $record['metadata'], ...
+    }
+}
+
+// Paginate (results over 10 MB) and filter:
+$next = $job->result(['cursor' => $result->cursor(), 'status' => 'completed']);
+
+// Cancel a running job:
+$job->cancel();
+```
+
+`CrawlResult` exposes `id()`, `status()`, `isCompleted()`, `isRunning()`, `total()`, `finished()`, `records()`, `cursor()`, and `raw()`. When `render` is enabled (the default), crawl jobs also accept the shared render options below.
+
 ### Shared render options
 
 Chainable before any endpoint method:
