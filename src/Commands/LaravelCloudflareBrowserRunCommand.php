@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Ziming\LaravelCloudflareBrowserRun\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelCloudflareBrowserRunCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-cloudflare-browser-run';
 
     public $description = 'My command';
 

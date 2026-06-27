@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace Ziming\LaravelCloudflareBrowserRun;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use VendorName\Skeleton\Commands\SkeletonCommand;
+use Ziming\LaravelCloudflareBrowserRun\Commands\LaravelCloudflareBrowserRunCommand;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class LaravelCloudflareBrowserRunServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -16,10 +16,10 @@ class SkeletonServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('skeleton')
+            ->name('laravel-cloudflare-browser-run')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_migration_table_name_table')
-            ->hasCommand(SkeletonCommand::class);
+            ->hasMigration('create_laravel_cloudflare_browser_run_table')
+            ->hasCommand(LaravelCloudflareBrowserRunCommand::class);
     }
 }
