@@ -17,8 +17,9 @@
     ],
     "require": {
         "php": "^8.4",
-        "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0||^13.0"
+        "illuminate/contracts": "^11.0||^12.0||^13.0",
+        "illuminate/support": "^11.0||^12.0||^13.0",
+        "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,8 +36,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Ziming\\LaravelCloudflareBrowserRun\\": "src/",
-            "Ziming\\LaravelCloudflareBrowserRun\\Database\\Factories\\": "database/factories/"
+            "Ziming\\LaravelCloudflareBrowserRun\\": "src/"
         }
     },
     "autoload-dev": {

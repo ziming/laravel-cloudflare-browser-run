@@ -4,7 +4,6 @@ namespace Ziming\LaravelCloudflareBrowserRun;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Ziming\LaravelCloudflareBrowserRun\Commands\LaravelCloudflareBrowserRunCommand;
 
 class LaravelCloudflareBrowserRunServiceProvider extends PackageServiceProvider
 {
@@ -17,9 +16,16 @@ class LaravelCloudflareBrowserRunServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('laravel-cloudflare-browser-run')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_cloudflare_browser_run_table')
-            ->hasCommand(LaravelCloudflareBrowserRunCommand::class);
+            ->hasConfigFile();
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->singleton(
+            LaravelCloudflareBrowserRun::class,
+            fn ($app) => new LaravelCloudflareBrowserRun((array) $app['config']->get('cloudflare-browser-run', []))
+        );
+
+        $this->app->alias(LaravelCloudflareBrowserRun::class, 'cloudflare-browser-run');
     }
 }
